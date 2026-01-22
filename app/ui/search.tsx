@@ -1,18 +1,38 @@
+// /app/ui/search.tsx
 'use client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+interface SearchProps {
+  placeholder?: string;
+  initialQuery?: string;
+}
 
-export default function Search({ placeholder }: { placeholder: string }) {
+export default function Search({ placeholder = '', initialQuery = '' }: SearchProps) {
+  const [query, setQuery] = useState(initialQuery);
+  const router = useRouter();
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Navigate to the same page with ?query=...
+    router.push(`?query=${encodeURIComponent(query)}`);
+  };
+
   return (
-    <div className="relative flex flex-1 flex-shrink-0">
-      <label htmlFor="search" className="sr-only">
-        Search
-      </label>
+    <form onSubmit={handleSubmit} className="flex gap-2">
       <input
-        className="peer block w-full rounded-md border border-gray-200 py-[9px] pl-10 text-sm outline-2 placeholder:text-gray-500"
+        type="text"
+        value={query}
         placeholder={placeholder}
+        onChange={(e) => setQuery(e.target.value)}
+        className="rounded border px-2 py-1 flex-grow"
       />
-      <MagnifyingGlassIcon className="absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-gray-500 peer-focus:text-gray-900" />
-    </div>
+      <button
+        type="submit"
+        className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-400 transition"
+      >
+        Search
+      </button>
+    </form>
   );
 }
